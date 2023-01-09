@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-const mongooseURI = 'mongodb://localhost:27017/';
+const mongooseURI = 'mongodb://127.0.0.1:27017/test?connectTimeoutMS=50000';
 
 export default function connectToDB ()  {
     mongoose.set('strictQuery', false);
