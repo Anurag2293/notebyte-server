@@ -1,6 +1,11 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken';
+
 import User from '../models/User.js';
+
+const JWT_SECRET = 'harekrishnaharekrishna';
 const router = new express.Router();
 
 // Create a user using: POST "/api/auth/createuser". No Login required
@@ -27,14 +32,23 @@ router.post('/createuser', [
             })
         }
 
-        // Create a new user
+        const salt = await bcrypt.genSalt(10);
+        const secPass = await bcrypt.hash(req.body.password, salt);
+
         user = await User.create({
             name: req.body.name,
-            password: req.body.password,
+            password: secPass,
             email: req.body.email
         })
 
-        res.json(user);
+        const data = {
+            user : {
+                id : user.id
+            }
+        }
+        const authtoken = jwt.sign(data, JWT_SECRET);
+
+        res.json({authtoken});
     } catch (e) {
         console.log(e.message)
         // Logger, SQS
